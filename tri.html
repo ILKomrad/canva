@@ -1,0 +1,22 @@
+<canvas id="canvas"></canvas>
+  <script>
+    var canvas = document.getElementById('canvas');
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+  if (canvas.getContext){
+    var ctx = canvas.getContext('2d');
+
+    ctx.beginPath();
+    ctx.moveTo(75,50);
+    ctx.lineTo(100,75);
+    ctx.lineTo(100,25);
+    ctx.fill();
+    ctx.save();
+    ctx.beginPath();
+    ctx.translate(120, 110);
+    ctx.moveTo(140, 140);
+    ctx.lineTo(160, 120);
+    ctx.lineTo(180, 140);
+    ctx.fill();
+  }
+  </script>
