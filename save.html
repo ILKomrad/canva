@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CH5EX9: Moving In A Circle</title>
+<style type="text/css">
+   body, html {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+   }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script type="text/javascript">
+   var canvas = document.getElementById('canvas');
+   canvas.height = window.innerHeight;
+   canvas.width = window.innerWidth;
+   var ctx = canvas.getContext('2d');
+
+   ctx.fillStyle = 'red';
+   ctx.beginPath();
+   ctx.rect(10, 10, 100, 100);
+   ctx.fill();
+
+   ctx.save();
+   ctx.fillStyle = 'orange';
+   ctx.beginPath();
+   ctx.rect(210, 210, 100, 100);
+   ctx.fill();
+
+   ctx.save();
+   ctx.fillStyle = 'grey';
+   ctx.beginPath();
+   ctx.rect(410, 410, 100, 100);
+   ctx.fill();
+
+   ctx.restore();
+   ctx.restore();
+
+   ctx.beginPath();
+   ctx.rect(600, 600, 100, 100);
+   ctx.fill();
+</script>
+</body>
+</html>

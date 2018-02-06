@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CH5EX9: Moving In A Circle</title>
+<style type="text/css">
+   body, html {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+   }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script type="text/javascript">
+var canvas = document.getElementById('canvas'),
+    ctx = canvas.getContext('2d'),
+    wH = window.innerHeight,
+    wW = window.innerWidth,
+    radius = 250,
+    t = 0;
+
+canvas.height = wH;
+canvas.width = wW;
+
+function Ball() {
+  this.ball = {
+    r: 30,
+    x: wW / 2 - 15,
+    y: wH / 2 - 15,
+    vx: 2,
+    vy: 22
+  }
+}
+
+Ball.prototype.draw = function() {
+  var th = this;
+
+  function draw() {
+    ctx.clearRect(0, 0, wW, wH);
+
+    ctx.beginPath();
+    ctx.fillStyle = 'red';
+    ctx.arc((wW / 2) - 2.5, (wH / 2) - 2.5, 5, 0, 2 * Math.PI, false);
+    ctx.fill();
+
+    th.ball.x = wW / 2 + Math.cos(t) * radius;
+    th.ball.y = wH / 2 + Math.sin(t) * radius;
+    ctx.beginPath();
+    ctx.fillStyle = '#000000';
+    ctx.arc(th.ball.x, th.ball.y, th.ball.r, 0, 2 * Math.PI, true);
+    ctx.fill();
+
+    t += 0.01;
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+}
+
+var b = new Ball();
+b.draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FRESH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+    	html, body {
+            margin: 0;
+            padding: 0;
+            height:100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        #count {
+            position: fixed;
+            top: 50px;
+            left: 20px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+function Dots() {
+    this.dots = [];
+}
+
+Dots.prototype.addDot = function(dot) {
+    this.dots.push(this.buildDot());
+}
+
+Dots.prototype.rand = function( min, max )
+{
+    return Math.random() * ( max - min) + min;
+}
+
+Dots.prototype.draw = function(ctx) {
+    this.dots.map(function(dot) {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2, false);
+        ctx.fill();
+    });
+}
+
+Dots.prototype.buildDot = function() {
+    var dot = {
+        x: this.rand(0, wSize.w),
+        y: this.rand(0, wSize.h),
+        speed: this.rand(3, 5),
+        radius: this.rand(1, 2)
+    }
+
+    if (this.checkMouse(dot)) {
+        return this.buildDot();
+    } else {
+        return dot;
+    }
+}
+
+Dots.prototype.checkOut = function(dot) {
+    if (dot.x < 0 || dot.y < 0 || dot.x > wSize.w || dot.y > wSize.h) {
+        return true;
+    }
+}
+
+Dots.prototype.checkMouse = function(dot) {
+    var a = mouse.x - dot.x,
+        b = mouse.y - dot.y,
+        c = Math.sqrt(a * a + b * b),
+        radius = 100;
+
+    if (radius >= c) {
+        return true;
+    }
+}
+
+Dots.prototype.update = function() {
+    for (var i = this.dots.length - 1; i >= 0; i--) {
+        if (this.checkOut(this.dots[i]) || this.checkMouse(this.dots[i])) {
+            this.dots.splice(i, 1);
+        } else {
+            var a = mouse.x - this.dots[i].x,
+                b = mouse.y - this.dots[i].y,
+                c = Math.sqrt(a * a + b * b),
+                speed = this.dots[i].speed;
+
+            if (speed <= c) {
+                var velX = (a / c) * speed,
+                    velY = (b / c) * speed;
+
+                if (!magnet) {
+                    this.dots[i].x -=  velX;
+                    this.dots[i].y -=  velY;
+                } else {
+                    this.dots[i].x +=  velX;
+                    this.dots[i].y +=  velY;
+                }
+            }
+        }
+    }
+}
+
+var oDots = new Dots(),
+    wSize = {
+        w: window.innerWidth,
+        h: window.innerHeight
+    },
+    mouse = {
+        x: wSize.w / 2,
+        y: wSize.h / 2
+    },
+    canvas = document.getElementById('canvas'),
+    ctx = canvas.getContext('2d'),
+    magnet = false;
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+document.addEventListener('click', function() {
+    magnet = !magnet;
+});
+document.addEventListener('mousemove', updateMouse);
+
+function updateMouse(e) {
+    mouse.x = e.pageX;
+    mouse.y = e.pageY;
+}
+
+/** ANIMATION **/
+function render() {
+    ctx.fillStyle = 'rgba(64,111,137, 1)';
+    ctx.fillRect(0, 0, wSize.w, wSize.h);
+
+    oDots.update();
+
+    for (var i = 0; i < 3; i++) {
+        oDots.addDot();
+    }
+
+    oDots.draw(ctx);
+
+    requestAnimationFrame(render);
+}
+
+render();
+</script>
+</body>
+</html>

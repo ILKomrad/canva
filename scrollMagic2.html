@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FRESH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+    	html, body {
+            margin: 0;
+            padding: 0;
+            height:100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        #count {
+            position: fixed;
+            top: 50px;
+            left: 20px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<span id="count"></span>
+<script>
+function dots() {
+    this.aDots = [];
+    this.catched = 0;
+
+
+    if ( typeof dots.initialized == "undefined" ) {
+        dots.prototype.init = function()
+        {};
+
+        dots.prototype.rand = function( min, max )
+        {
+
+            return Math.random() * ( max - min) + min;
+
+        }
+
+
+        dots.prototype.addDot = function()
+        {
+
+            this.aDots.push( this.build_dot() );
+            
+        };
+
+        dots.prototype.build_dot = function()
+        {
+
+
+            oDot = {
+
+                x       : rand( 0, oSize.w ),
+
+                y       : rand( 0, oSize.h ),
+
+                r       : rand( 1, 2 ),
+
+                s       : rand( 5, 10 )
+
+            }
+
+            if( this.check_mouse( oDot ) )
+                return this.build_dot();
+            else
+                return oDot;
+        };
+
+        dots.prototype.check_mouse = function( dot )
+        {
+            var radius = 50;    
+            var dx = oMouse.x - dot.x;      
+            var dy = oMouse.y - dot.y;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+
+            // detection collion circle
+            if ( distance < radius){
+                
+                oDots.catched++;
+                return true;
+            
+            }else{
+                return false;
+            }
+        }
+
+        dots.prototype.check_out = function( dot )
+        {       
+
+            if( 
+                dot.x < 0  ||  dot.x > oSize.w || dot.y < 0  ||  dot.y > oSize.h
+            ){
+
+                return true;
+
+            }else{
+
+                return false;
+            }
+
+        }
+
+
+        dots.prototype.update = function(){
+            
+            for (var i = this.aDots.length - 1; i >= 0; i--) {
+
+                if( this.check_mouse( this.aDots[i] ) || this.check_out( this.aDots[i] ) ){
+
+                    this.aDots.splice(i, 1);
+
+                }else{
+
+                    //source
+                    //http://stackoverflow.com/questions/14178782/how-can-i-make-my-character-move-diagonally
+                    var speed = this.aDots[i].s,
+                    tx = oMouse.x - this.aDots[i].x,
+                    ty = oMouse.y - this.aDots[i].y,
+                    dist = Math.sqrt(tx * tx + ty * ty);
+                    
+                    if ( dist >= speed ) {
+
+                        velX = ( tx / dist ) * speed;
+                        velY = ( ty / dist ) * speed;
+                        
+                        if( !bMagnet ){
+                            this.aDots[i].x -= velX;
+                            this.aDots[i].y -= velY;
+                        }else{
+                            this.aDots[i].x += velX;
+                            this.aDots[i].y += velY;
+                        }
+                    }
+                    //fin source
+                    
+
+
+                }
+
+            };
+
+        }
+
+
+        dots.prototype.draw = function( ctx )
+        {
+            this.aDots.map(function( dot ){
+
+                var a = rand( 3, 10 );
+                ctx.beginPath();
+                ctx.arc( dot.x, dot.y, dot.r, 0, 2 * Math.PI, false );
+                ctx.fillStyle = 'rgba( 255, 255, 255, 1)'
+                ctx.fill();
+            });
+        }
+        this.init();
+        dots.initialized = true;
+    }
+}
+
+
+
+/** global vars **/
+var oSize = {
+    h : document.body.clientHeight,
+    w : document.body.clientWidth
+};
+var oMouse = {
+    x : oSize.w / 2,
+    y : oSize.h / 2
+};
+var oCanvas = document.getElementById('canvas');
+var oCtx = oCanvas.getContext('2d');
+
+oCanvas.height = oSize.h;
+oCanvas.width = oSize.w;
+
+
+
+
+
+rand = function( min, max ){ return Math.random() * ( max - min) + min; }
+update_mouse = function( _e ){
+
+    oMouse.y = _e.pageY;
+    oMouse.x = _e.pageX;
+
+}
+onresize = function () {
+    oSize.w = oCanvas.width = window.innerWidth;
+    oSize.h = oCanvas.height = window.innerHeight;
+}
+var bMagnet = false;
+toggle_magnet = function(){
+    
+    bMagnet = !bMagnet;
+    
+}
+document.addEventListener('onresize', onresize, false);
+document.addEventListener('mousemove', update_mouse, false);
+document.body.addEventListener('click', toggle_magnet, false);
+window.onresize();
+
+function build_dot()
+{
+
+    setTimeout( build_dot, rand( 100, 1000 ) );
+
+}
+
+var oDots = new dots();
+
+/** ANIMATION **/
+function render(){
+
+    //oCtx.clearRect(0, 0, oSize.w, oSize.h );
+    oCtx.fillStyle = "rgba( 16, 39, 68, 0.5 )";
+
+    oCtx.fillRect( 0, 0, oSize.w, oSize.h );
+
+    oDots.update();
+    
+    for (var i = 0; i < 1; i++) {
+      oDots.addDot();
+    }   
+    
+
+    oDots.draw( oCtx );
+
+    requestAnimationFrame( render );
+
+    document.getElementById('count').innerHTML = oDots.catched ;
+
+}
+//build_dot();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CH5EX9: Moving In A Circle</title>
+<style type="text/css">
+   body, html {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+   }
+</style>
+</head>
+<body>
+<canvas id="myCanvas"></canvas>
+
+<script type="text/javascript">
+var mainCanvas = document.getElementById("myCanvas");
+var mainContext = mainCanvas.getContext('2d');
+mainCanvas.width = window.innerWidth;
+mainCanvas.height = window.innerHeight;
+var canvasWidth = mainCanvas.width;
+var canvasHeight = mainCanvas.height;
+ 
+var angle = 0;
+ 
+var requestAnimationFrame = window.requestAnimationFrame || 
+                            window.mozRequestAnimationFrame || 
+                            window.webkitRequestAnimationFrame || 
+                            window.msRequestAnimationFrame;
+ 
+function drawCircle() {
+    mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+     
+    // color in the background
+    mainContext.fillStyle = "#EEEEEE";
+    mainContext.fillRect(0, 0, canvasWidth, canvasHeight);
+     
+    // draw the circle
+    mainContext.beginPath();
+    var radius = 25 + 150 * Math.abs(Math.cos(angle));
+    mainContext.arc(225, 225, radius, 0, Math.PI * 2, false);
+    mainContext.closePath();
+     
+    // color in the circle
+    mainContext.fillStyle = "#006699";
+    mainContext.fill();
+      
+    angle += Math.PI / 164; // скорость увеличения
+     
+    requestAnimationFrame(drawCircle);
+}
+drawCircle();
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CH5EX9: Moving In A Circle</title>
+<style type="text/css">
+   body, html {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+   }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script type="text/javascript">
+var canvas = document.getElementById('canvas'),
+    ctx = canvas.getContext('2d'),
+    wH = window.innerHeight,
+    wW = window.innerWidth;
+
+canvas.height = wH;
+canvas.width = wW;
+
+function Ball() {
+  this.ball = {
+    r: 30,
+    x: window.innerWidth / 2 - 15,
+    y: window.innerHeight / 2 - 15,
+    vx: 2,
+    vy: 22
+  }
+}
+
+Ball.prototype.draw = function() {
+  var th = this;
+
+  function draw() {
+    ctx.clearRect(0, 0, wW, wH);
+
+    ctx.beginPath();
+    ctx.fillStyle = '#000000';
+    ctx.arc(th.ball.x, th.ball.y, th.ball.r, 0, 2 * Math.PI, true);
+    ctx.fill();
+
+    var collision = th.checkCollision({x: th.ball.x, y: th.ball.y, r: th.ball.r});
+
+    if (collision == 'gorizontal') {
+      th.ball.vx *= -1;
+    } else if (collision == 'vertical') {
+      th.ball.vy *= -1;
+    }
+
+    th.ball.x += th.ball.vx;
+    th.ball.y += th.ball.vy;
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+}
+
+Ball.prototype.checkCollision = function(mesh) {
+  if (mesh.x <= 0 || (mesh.x + mesh.r) >= window.innerWidth) {
+    return 'gorizontal';
+  } else if (mesh.y <= 0 || (mesh.y + mesh.r) >= window.innerHeight) {
+    return 'vertical';
+  }
+}
+
+var b = new Ball();
+b.draw();
+</script>
+</body>
+</html>
