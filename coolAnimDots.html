@@ -22,10 +22,11 @@ var canvas = document.getElementById('canvas'),
   wW = window.innerWidth,
   o = 0,
   p = 0,
-  step = 15,
+  step = 5,
+  deltaStep = 10,
   mouse = {
-    x: wW / 2,
-    y: wH / 2
+    x: null,
+    y: null
   },
   ctx = canvas.getContext('2d');
 
@@ -36,6 +37,12 @@ function Triangles() {
   this.T = [];
   this.deltaX = 100;
   this.prevX = 0;
+}
+
+Triangles.prototype.init = function() {
+  var updateMouse = this.updateMouse.bind(this);
+
+  document.addEventListener('mousemove', updateMouse);
 }
 
 Triangles.prototype.rand = function( min, max )
@@ -50,7 +57,7 @@ Triangles.prototype.addTriangle = function() {
 Triangles.prototype.setDeltaX = function() {
   if (this.prevX <= canvas.width) {
     this.prevX = this.deltaX;
-    this.deltaX += 10;
+    this.deltaX += deltaStep;
   }
 }
 
@@ -61,9 +68,9 @@ Triangles.prototype.createTriangle = function() {
   return {
     x: startX,
     y: startY,
-    r: this.rand(10, 30),
+    r: this.rand(5, 15),
     center: {
-      x: this.rand(0, wW), 
+      x: wW, 
       y: this.rand(0, wH)
     },
     flyAngle: this.rand(0, 90),
@@ -77,12 +84,6 @@ Triangles.prototype.draw = function(ct) {
 
   this.T.map(function(tr) {
     //step *= -1;
-    var a = tr.center.x - tr.x,
-        b = tr.center.y - tr.y,
-        c = Math.sqrt(a * a + b * b);
-
-    tr.x -= (a / c) * step;
-    tr.y -= (b / c) * step;
     ct.fillStyle = 'rgba(0, 0, 0, ' + tr.alpha + ')';
     ct.beginPath();
     ct.arc(tr.x, tr.y, tr.r, 0, 2 * Math.PI, true);
@@ -92,20 +93,46 @@ Triangles.prototype.draw = function(ct) {
   });
 }
 
+Triangles.prototype.update = function() {
+  this.T.map(function(tr) {
+    var a = tr.center.x - tr.x,
+        b = tr.center.y - tr.y,
+        c = Math.sqrt(a * a + b * b);
+
+    tr.x -= (a / c) * step;
+    tr.y -= (b / c) * step;
+  });
+}
+
 Triangles.prototype.renderer = function() {
   var th = this;
+  th.init();
 
   function r() {
+    ctx.clearRect(0, 0, wW, wH);
+
+    if (th.prevX >= (canvas.width / 2)) {
+      deltaStep = 1;
+    }
+
     if (th.prevX <= canvas.width) {
       th.addTriangle();
-      ctx.clearRect(0, 0, wW, wH);
       th.setDeltaX();
-      th.draw(ctx);
     }
+
+    th.update();
+    th.draw(ctx);
     requestAnimationFrame(r);
   }
 
   r();
+}
+
+Triangles.prototype.updateMouse = function(e) {
+  this.T.map(function(tr) {
+    tr.center.x = e.pageX;
+    tr.center.y = e.pageY;
+  });
 }
 
 var t = new Triangles();
