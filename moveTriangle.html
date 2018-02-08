@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CH5EX9: Moving In A Circle</title>
+<style type="text/css">
+   body, html {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+   }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script type="text/javascript">
+var canvas = document.getElementById('canvas'),
+    wH = window.innerHeight,
+    wW = window.innerWidth,
+    x = 0,
+    y = 0,
+    t = 0,
+    z = 0,
+    ctx = canvas.getContext('2d');
+
+canvas.height = wH;
+canvas.width = wW;
+
+function draw() {
+  x += 1;
+  y += 1;
+  t -= 2;
+  z -= 2;
+  ctx.globalCompositeOperation = 'destination-over';
+  ctx.save();
+  ctx.clearRect(0, 0, wW, wH);
+  ctx.beginPath();
+  ctx.translate(x, y);
+  ctx.moveTo(100, 100);
+  ctx.lineTo(150, 50);
+  ctx.lineTo(200, 100);
+  ctx.fillStyle = 'red';
+  ctx.fill();
+  
+  ctx.save();
+  ctx.beginPath();
+  ctx.translate(t, z);
+  ctx.moveTo(200, 200);
+  ctx.lineTo(250, 150);
+  ctx.lineTo(300, 200);
+  ctx.fill();
+
+  ctx.restore();
+  ctx.restore();
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>

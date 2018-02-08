@@ -22,6 +22,15 @@ var canvas = document.getElementById('canvas'),
   wW = window.innerWidth,
   o = 0,
   p = 0,
+  step = 5,
+  mouse = {
+    x: wW / 2,
+    y: wH / 2
+  },
+  center = {
+    x: wW / 2,
+    y: wH / 2
+  },
   ctx = canvas.getContext('2d');
 
 canvas.height = wH;
@@ -50,40 +59,38 @@ Triangles.prototype.setDeltaX = function() {
 }
 
 Triangles.prototype.createTriangle = function() {
-  var side =  this.rand(20, 70),
-      startX = this.rand(this.prevX, this.deltaX),
+  var startX = this.rand(this.prevX, this.deltaX),
       startY = this.rand(wH / 2 - 100, wH / 2 + 100);
 
   return {
-    x1: startX,
-    y1: startY,
-    x2: startX + (Math.cos(1) * side),
-    y2: startY - (Math.sin(1) * side),
-    x3: startX + side,
-    y3: startY,
-    sideSize: side,
+    x: startX,
+    y: startY,
+    r: this.rand(10, 30),
     flyAngle: this.rand(0, 90),
     flyDist: this.rand(100, 300),
     alpha: this.rand(0.1, 1)
   }
 }
 
-Triangles.prototype.draw = function(c) {
+Triangles.prototype.draw = function(ct) {
   ctx.globalCompositeOperation = 'destination-over';
+  center.x = this.rand(0, wW);
+  center.y = this.rand(0, wH);
 
   this.T.map(function(tr) {
-    o += 1.001 * Math.abs(Math.cos(o));
-    p -= 1.001 * Math.abs(Math.sin(p));
-    c.save();
-    c.translate(o, p);
-    c.fillStyle = 'rgba(0, 0, 0, ' + tr.alpha + ')';
-    c.beginPath();
-    c.moveTo(tr.x1, tr.y1);
-    c.lineTo(tr.x2, tr.y2);
-    c.lineTo(tr.x3, tr.y3);
-    c.fill();
-    c.closePath();
-    c.restore();    
+    //step *= -1;
+    var a = center.x - tr.x,
+        b = center.y - tr.y,
+        c = Math.sqrt(a * a + b * b);
+
+    tr.x -= (a / c) * step;
+    tr.y -= (b / c) * step;
+    ct.fillStyle = 'rgba(0, 0, 0, ' + tr.alpha + ')';
+    ct.beginPath();
+    ct.arc(tr.x, tr.y, tr.r, 0, 2 * Math.PI, true);
+    ct.fill();
+    ct.closePath();
+    ct.restore();    
   });
 }
 
