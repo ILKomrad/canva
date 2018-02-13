@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CH5EX9: Moving In A Circle</title>
+<style type="text/css">
+   body, html {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+   }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script type="text/javascript">
+var canvas = document.getElementById('canvas'),
+  wH = window.innerHeight,
+  wW = window.innerWidth,
+  ctx = canvas.getContext('2d');
+
+canvas.height = wH;
+canvas.width = wW;
+
+function A() {
+  this.mouse = {
+    x: wW / 2,
+    y: wH / 2
+  }
+
+  this.dots = [];
+
+  this.mouseDelta = {
+    x: 0,
+    y: 0
+  }
+
+  this.mousePrev = {
+    x: 0,
+    y: 0
+  }
+}
+
+A.prototype.rand = function(min, max) {
+  return Math.random() * ( max - min) + min;
+}
+
+A.prototype.addDot = function() {
+  this.dots.push(this.createDot());
+}
+
+A.prototype.createDot = function() {
+  return {
+    x: this.rand(wW * 0.2, wW * 0.8),
+    y: this.rand(wH * 0.2, wH * 0.8),
+    r: 20
+  }  
+}
+
+A.prototype.draw = function() {
+  for (var i = 0; i < this.dots.length; i++) {
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(this.dots[i].x, this.dots[i].y, this.dots[i].r, 0, 2 * Math.PI, false);
+    ctx.fill();
+  }
+}
+
+A.prototype.mouseUpdate = function(e) {
+  var th = this;
+  
+  this.mouseDelta.x = e.pageX - this.mousePrev.x;
+  this.mouseDelta.y = e.pageY - this.mousePrev.y;
+
+  this.mousePrev.x = e.pageX;
+  this.mousePrev.y = e.pageY;
+
+  this.dots.map(function(ball) {
+    //console.log( ball.x )
+    ball.x -= th.mouseDelta.x / 5;
+    ball.y -= th.mouseDelta.y / 5;
+  })
+}
+
+A.prototype.render = function() {
+  var th = this;
+
+  for (var i = 0; i < 100; i++) {
+    th.addDot();
+  }
+console.log( th.dots )
+  function f() {
+    ctx.clearRect(0, 0, wW, wH);
+    //th.update();
+    th.draw();
+    requestAnimationFrame(f);
+  }
+
+  f();
+
+  var mouseHandler = this.mouseUpdate.bind(this);
+
+  window.addEventListener('mousemove', mouseHandler);
+}
+
+var a = new A;
+a.render();
+
+</script>
+</body>
+</html>
