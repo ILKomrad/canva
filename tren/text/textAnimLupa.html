@@ -104,6 +104,7 @@ S.prototype.createDot = function(ctx) {
       y: th.rand(0, canvas.height),
       finishX: 0,
       finishY: 0,
+      touchDelta: 0,
       mouseAngleX: null,
       mouseAngleY: null,
       r: 1,
@@ -126,10 +127,18 @@ S.prototype.createDot = function(ctx) {
             } else {
               this.mouseTouch = false;
             }
+            this.touchDelta += 1;
 
-            _deltaX = -1 * this.mouseAngleX * 10;
-            _deltaY = -1 * this.mouseAngleY * 10;
+            if (this.touchDelta <= 2) {
+              _deltaX = -1 * this.mouseAngleX * 10;
+              _deltaY = -1 * this.mouseAngleY * 10;
+            } else {
+              _deltaX = 0;
+              _deltaY = 0;
+            }
           } else {
+            this.touchDelta = 0;
+            
             if (_alpha <= _a) {
               _alpha += 0.07;
             }
