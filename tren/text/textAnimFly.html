@@ -59,9 +59,7 @@ S.prototype.checkMouse = function(obj) {
     obj.mouseTouch = true;
     obj.mouseAngleX = a / c;
     obj.mouseAngleY = b / c;
-  } else {
-    obj.mouseTouch = false;
-  }
+  } 
 }
 
 S.prototype.drawText = function() {
@@ -92,6 +90,14 @@ S.prototype.setPos = function() {
     }
 }
 
+S.prototype.outCheck = function(obj) {
+  if ((obj.x < 0) || (obj.x > canvas.width) || (obj.y < 0) || (obj.y > canvas.height)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 S.prototype.createDot = function(ctx) {
   var th = this,
       _color = colors[Math.round(th.rand(0, (colors.length - 1)))],
@@ -105,6 +111,7 @@ S.prototype.createDot = function(ctx) {
       finishY: 0,
       mouseAngleX: null,
       mouseAngleY: null,
+      out: false,
       r: 1,
       mouseTouch: false,
       setPosition: function(x, y) {
@@ -119,20 +126,15 @@ S.prototype.createDot = function(ctx) {
               _deltaX = (_x / _z) * (_z / 30),
               _deltaY = (_y / _z) * (_z / 30);
 
-          if (this.mouseTouch) {
-            if (_alpha >= 0.07) {
-              _alpha -= 0.07;
-            } else {
-              this.mouseTouch = false;
-            }
+          if (this.out) {
+            this.mouseTouch = false;
+            this.out = false;
+          }
 
+          if (this.mouseTouch) {
             _deltaX = -1 * this.mouseAngleX * 10;
             _deltaY = -1 * this.mouseAngleY * 10;
-          } else {
-            if (_alpha <= _a) {
-              _alpha += 0.07;
-            }
-          }
+          } 
 
           ctx.globalAlpha = _alpha;
           ctx.beginPath();
@@ -156,6 +158,12 @@ S.prototype.update = function() {
 
         for (var i = 0; i < th.dots.length; i++) {
             th.checkMouse(th.dots[i]);
+            var check = th.outCheck(th.dots[i]);
+
+            if (check) {
+              th.dots[i].out = true;
+            } 
+
             th.dots[i].draw();
         }
 
