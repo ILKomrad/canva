@@ -38,8 +38,6 @@ Triangles.prototype.createTriangle = function() {
   var th = this,
       x = -100 * Math.cos(Math.PI / 3),
       y = (100 * Math.sin(Math.PI / 3)) / 2,
-      _tt = 0.5,
-      di = 'up',
       center = {
         x: 0,
         y: 0
@@ -49,32 +47,31 @@ Triangles.prototype.createTriangle = function() {
     side: 100,
     x: x,
     y: y,
-    inititalScale: 0,
-    scaleStep: 0.01,
+    inititalScale: 0.6,
+    minScale: 0.6,
+    scaleDir: 'up',
+    scaleStep: 0.005,
     rgba: [Math.round(th.rand(0, 999)), Math.round(th.rand(0, 999)), Math.round(th.rand(0, 999))],
-    draw: function(ctx) {
-      // this.inititalScale += this.scaleStep;
-      // var scale = Math.abs(Math.sin(this.inititalScale));
-      
-      if (di == 'up') {
-        if (_tt <= 1) {
-          _tt += 0.01;
+    draw: function(ctx) {      
+      if (this.scaleDir == 'up') {
+        if (this.inititalScale <= 1) {
+          this.inititalScale += this.scaleStep;
         } else {
-          di = 'down';
+          this.scaleDir = 'down';
         }
       }
 
-      if (di == 'down') {
-        if (_tt >= 0.5) {
-          _tt -= 0.01;
+      if (this.scaleDir == 'down') {
+        if (this.inititalScale >= this.minScale) {
+          this.inititalScale -= this.scaleStep;
         } else {
-          di = 'up';
+          this.scaleDir = 'up';
         }
       }
 
       ctx.save();
       ctx.translate(200, 200);
-      ctx.scale(_tt, _tt)
+      ctx.scale(this.inititalScale , this.inititalScale);
       ctx.beginPath();
       ctx.lineWidth = 10;
       ctx.moveTo(this.x, this.y);

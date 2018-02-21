@@ -38,6 +38,7 @@ Triangles.prototype.createTriangle = function() {
   var th = this,
       x = -100 * Math.cos(Math.PI / 3),
       y = (100 * Math.sin(Math.PI / 3)) / 2,
+      stepX
       _tt = 0.5,
       di = 'up',
       center = {
@@ -49,6 +50,10 @@ Triangles.prototype.createTriangle = function() {
     side: 100,
     x: x,
     y: y,
+    dx: 200,
+    dY: 200,
+    moveSpeed: 0.01,
+    moveDist: 200,
     inititalScale: 0,
     scaleStep: 0.01,
     rgba: [Math.round(th.rand(0, 999)), Math.round(th.rand(0, 999)), Math.round(th.rand(0, 999))],
@@ -73,7 +78,7 @@ Triangles.prototype.createTriangle = function() {
       }
 
       ctx.save();
-      ctx.translate(200, 200);
+      ctx.translate(this.dx, this.dY);
       ctx.scale(_tt, _tt)
       ctx.beginPath();
       ctx.lineWidth = 10;
@@ -87,6 +92,14 @@ Triangles.prototype.createTriangle = function() {
   }
 }
 
+Triangles.prototype.update = function() {
+  this.triangles.map(function(t) {
+    t.moveSpeed += 0.01;
+    t.dx += t.moveDist * Math.sin(t.moveSpeed);
+    t.dy += t.moveDist * Math.sin(t.moveSpeed);
+  })
+}
+
 Triangles.prototype.render = function() {
   var th = this;
 
@@ -96,6 +109,7 @@ Triangles.prototype.render = function() {
 
   function r() {
     th.ctx.clearRect(0, 0, th.canvas.width, th.canvas.height);
+    th.update();
     th.triangles.map(function(t, i) {
       t.draw(th.ctx);
     });
